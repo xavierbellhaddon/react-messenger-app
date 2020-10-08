@@ -1,4 +1,10 @@
-import { Button, FormControl, Input, InputLabel, withStyles } from "@material-ui/core";
+import {
+  Button,
+  FormControl,
+  Input,
+  InputLabel,
+  withStyles,
+} from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import Message from "./Message";
@@ -13,10 +19,10 @@ function App() {
 
   const StyledButton = withStyles({
     root: {
-      marginTop: '10px',
+      marginTop: "10px",
     },
     label: {
-      textTransform: 'capitalize',
+      textTransform: "capitalize",
     },
   })(Button);
 
@@ -44,10 +50,14 @@ function App() {
     setInput("");
   };
 
+  const isLoggedIn = username.length > 0;
+
   return (
     <div className="App">
       <div className="titleContainer">
-        {username.length > 0 && <h1 className='app__title'>Hi, {username}!</h1>}
+        <h1 className="app__title">
+          Hey there, {isLoggedIn ? username : "stranger"}!
+        </h1>
       </div>
 
       <form className="app__form" onSubmit={sendMessage}>
@@ -58,7 +68,12 @@ function App() {
             // color='secondary'
             onChange={(event) => setInput(event.target.value)}
           />
-          <StyledButton type="submit" disabled={!input} variant="contained" color="primary">
+          <StyledButton
+            type="submit"
+            disabled={!input}
+            variant="contained"
+            color="primary"
+          >
             Send Message
           </StyledButton>
         </FormControl>
