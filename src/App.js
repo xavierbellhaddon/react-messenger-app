@@ -34,9 +34,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
-})
-)
-
+}));
 
 function App() {
   const classes = useStyles();
@@ -46,8 +44,9 @@ function App() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [modalStyle] = useState(getModalStyle);
-  const [open, setOpen] = useState(true);
-  
+  const [open, setOpen] = useState(false);
+  const [openSignIn, setOpenSignIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   const StyledButton = withStyles({
     root: {
@@ -57,6 +56,21 @@ function App() {
       textTransform: "capitalize",
     },
   })(Button);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        console.log(authUser);
+        setUser(authUser);
+      } else {
+        setUser(null);
+      }
+      console.log(user.displayName)
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [user, username]);
 
   useEffect(() => {
     db.collection("messages")
@@ -87,6 +101,15 @@ function App() {
     setOpen(false);
   };
 
+  const signIn = (event) => {
+    event.preventDefault();
+
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .catch((error) => alert(error.message));
+    setOpenSignIn(false);
+  };
+
   const sendMessage = (event) => {
     event.preventDefault();
     db.collection("messages").add({
@@ -101,10 +124,8 @@ function App() {
 
   return (
     <div className="App">
-
       <Modal open={open} onClose={() => setOpen(false)}>
-        <div  style={modalStyle}className={classes.paper}>
-          <p>POOP</p>
+        <div style={modalStyle} className={classes.paper}>
           <form className="app__signup">
             <Input
               type="text"
@@ -125,8 +146,28 @@ function App() {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            {/* <Button onClick={signUp}>Sign Up</Button> */}
             <Button onClick={signUp}>Sign Up</Button>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal open={openSignIn} onClose={() => setOpenSignIn(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className="app__signup">
+            <Input
+              placeholder="email"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+              placeholder="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <Button onClick={signIn}>Sign In</Button>
           </form>
         </div>
       </Modal>
@@ -135,6 +176,20 @@ function App() {
         <h1 className="app__title">
           Hey there, {isLoggedIn ? username : "stranger"}!
         </h1>
+        {/* <Button onClick={() => setOpen(true)}>Sign Up</Button>
+        <Button onClick={() => setOpenSignIn(true)}>Sign In</Button> */}
+
+        {user ? (
+          <Button onClick={() => auth.signOut()}>Logout</Button>
+        ) : (
+          <div className="app__loginContainer">
+            <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+            <Button onClick={() => setOpen(true)}>Sign Up</Button>
+          </div>
+        )}
+
+      {/* <Button onClick={() => auth.signOut()}>Logout</Button> */}
+
       </div>
 
       <form className="app__form" onSubmit={sendMessage}>
