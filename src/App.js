@@ -58,14 +58,17 @@ function App() {
   })(Button);
 
   useEffect(() => {
+    console.log(username)
+  })
+
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        console.log(authUser);
         setUser(authUser);
+        setUsername(authUser.displayName)
       } else {
         setUser(null);
       }
-      console.log(user.displayName)
     });
     return () => {
       unsubscribe();
@@ -174,6 +177,7 @@ function App() {
 
       <div className="titleContainer">
         <h1 className="app__title">
+          {/* Hi there! */}
           Hey there, {isLoggedIn ? username : "stranger"}!
         </h1>
         {/* <Button onClick={() => setOpen(true)}>Sign Up</Button>
