@@ -40,7 +40,7 @@ function App() {
   const classes = useStyles();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [modalStyle] = useState(getModalStyle);
@@ -56,10 +56,6 @@ function App() {
       textTransform: "capitalize",
     },
   })(Button);
-
-  useEffect(() => {
-    console.log(username)
-  })
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
@@ -85,10 +81,6 @@ function App() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   setUsername(prompt("Please enter your name"));
-  // }, []);
-
   const signUp = (event) => {
     event.preventDefault();
 
@@ -113,6 +105,14 @@ function App() {
     setOpenSignIn(false);
   };
 
+  const signOut = (event) => {
+    event.preventDefault();
+
+    auth.signOut();
+    setUsername(null)
+
+  }
+
   const sendMessage = (event) => {
     event.preventDefault();
     db.collection("messages").add({
@@ -123,7 +123,7 @@ function App() {
     setInput("");
   };
 
-  const isLoggedIn = username.length > 0;
+  const isLoggedIn = username !== null;
 
   return (
     <div className="App">
@@ -177,22 +177,17 @@ function App() {
 
       <div className="titleContainer">
         <h1 className="app__title">
-          {/* Hi there! */}
-          Hey there, {isLoggedIn ? username : "stranger"}!
+          {isLoggedIn ? `Hi there, ${username}!` : "Welcome!"}
         </h1>
-        {/* <Button onClick={() => setOpen(true)}>Sign Up</Button>
-        <Button onClick={() => setOpenSignIn(true)}>Sign In</Button> */}
 
         {user ? (
-          <Button onClick={() => auth.signOut()}>Logout</Button>
+          <Button onClick={signOut}>Sign Out</Button>
         ) : (
           <div className="app__loginContainer">
             <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
             <Button onClick={() => setOpen(true)}>Sign Up</Button>
           </div>
         )}
-
-      {/* <Button onClick={() => auth.signOut()}>Logout</Button> */}
 
       </div>
 
@@ -201,7 +196,6 @@ function App() {
           <InputLabel>Enter a message...</InputLabel>
           <Input
             value={input}
-            // color='secondary'
             onChange={(event) => setInput(event.target.value)}
           />
           <StyledButton
