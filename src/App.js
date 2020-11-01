@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: 400,
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
+    backgroundColor: "#f3f3f3",
+    border: "2px solid lightgray",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
@@ -86,7 +86,6 @@ function App() {
 
     auth
       .createUserWithEmailAndPassword(email, password)
-      
       .then((authUser) => {
         return authUser.user.updateProfile({
           displayName: username,
@@ -95,10 +94,8 @@ function App() {
       .then(() => {
         window.location.reload();
       })
-      .catch((error) => alert(error.message))
+      .catch((error) => alert(error.message));
 
-    // window.location.replace(window.location.pathname + window.location.search + window.location.hash);
-    // window.location.reload();
     setOpen(false);
   };
 
@@ -118,16 +115,6 @@ function App() {
     setUsername(null);
   };
 
-  // const sendMessage = (event) => {
-  //   event.preventDefault();
-  //   db.collection("messages").add({
-  //     message: input,
-  //     username: username,
-  //     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-  //   });
-  //   setInput("");
-  // };
-
   const sendMessage = (event) => {
     event.preventDefault();
     if (user && isLoggedIn) {
@@ -142,7 +129,7 @@ function App() {
     }
   };
 
-  const isLoggedIn = username !== null;
+  const isLoggedIn = user && username !== null;
 
   return (
     <div className="App">
@@ -196,11 +183,10 @@ function App() {
 
       <div className="titleContainer">
         <h1 className="app__title">
-          {/* {isLoggedIn ? `Hi there, ${username}!` : "Welcome!"} */}
-          {user && isLoggedIn ? `Hi there, ${username}!` : "Welcome!"}
+          {isLoggedIn ? `Hi there, ${username}!` : "Welcome!"}
         </h1>
 
-        {user ? (
+        {isLoggedIn ? (
           <div className="app__loginContainer">
             <Button onClick={signOut}>Sign Out</Button>
           </div>

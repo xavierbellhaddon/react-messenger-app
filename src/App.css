@@ -6,6 +6,11 @@ body {
   background-color: white;
 }
 
+.app__signup {
+  display: flex;
+  flex-direction: column;
+}
+
 .app__form {
   padding: 20px;
   position: fixed;
@@ -22,7 +27,8 @@ body {
 
 .app__title {
   color: white;
-  display: inline;  
+  display: block;
+  margin-bottom: 5px;
 }
 
 .titleContainer {
