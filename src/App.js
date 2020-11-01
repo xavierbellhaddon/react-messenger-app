@@ -61,7 +61,7 @@ function App() {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         setUser(authUser);
-        setUsername(authUser.displayName)
+        setUsername(authUser.displayName);
       } else {
         setUser(null);
       }
@@ -86,13 +86,19 @@ function App() {
 
     auth
       .createUserWithEmailAndPassword(email, password)
+      
       .then((authUser) => {
         return authUser.user.updateProfile({
           displayName: username,
         });
       })
-      .catch((error) => alert(error.message));
+      .then(() => {
+        window.location.reload();
+      })
+      .catch((error) => alert(error.message))
 
+    // window.location.replace(window.location.pathname + window.location.search + window.location.hash);
+    // window.location.reload();
     setOpen(false);
   };
 
@@ -109,18 +115,31 @@ function App() {
     event.preventDefault();
 
     auth.signOut();
-    setUsername(null)
+    setUsername(null);
+  };
 
-  }
+  // const sendMessage = (event) => {
+  //   event.preventDefault();
+  //   db.collection("messages").add({
+  //     message: input,
+  //     username: username,
+  //     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+  //   });
+  //   setInput("");
+  // };
 
   const sendMessage = (event) => {
     event.preventDefault();
-    db.collection("messages").add({
-      message: input,
-      username: username,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-    setInput("");
+    if (user && isLoggedIn) {
+      db.collection("messages").add({
+        message: input,
+        username: username,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      setInput("");
+    } else {
+      alert("Please sign in to send a message.");
+    }
   };
 
   const isLoggedIn = username !== null;
@@ -177,18 +196,20 @@ function App() {
 
       <div className="titleContainer">
         <h1 className="app__title">
-          {isLoggedIn ? `Hi there, ${username}!` : "Welcome!"}
+          {/* {isLoggedIn ? `Hi there, ${username}!` : "Welcome!"} */}
+          {user && isLoggedIn ? `Hi there, ${username}!` : "Welcome!"}
         </h1>
 
         {user ? (
-          <Button onClick={signOut}>Sign Out</Button>
+          <div className="app__loginContainer">
+            <Button onClick={signOut}>Sign Out</Button>
+          </div>
         ) : (
           <div className="app__loginContainer">
             <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
             <Button onClick={() => setOpen(true)}>Sign Up</Button>
           </div>
         )}
-
       </div>
 
       <form className="app__form" onSubmit={sendMessage}>
